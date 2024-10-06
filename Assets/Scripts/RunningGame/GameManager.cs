@@ -15,9 +15,12 @@ public class GameManager : MonoBehaviour
     public Text H_text;
     public GameObject GameOver_Panel;
     public GameObject Menu_Panel;
+    public GameObject playerSelct_panel;
     [HideInInspector]
     public int PlayerSpeed = 0;
     public bool isGameStart = false;
+
+    private int selectedPlayer = 0;
     private void Awake()
     {
       // PlayerPrefs.DeleteAll();
@@ -62,11 +65,34 @@ public class GameManager : MonoBehaviour
     }
     public void StartButtonClick()
     {
-        isGameStart = true;
         Menu_Panel.SetActive(false);
+        playerSelct_panel.SetActive(true);
+     
+       
+    }
+    public void GameStart()
+    {
+        isGameStart = true;
+        playerSelct_panel.SetActive(false);
         PlayerSpeed = 7;
         _playerCon.characterAnimator.SetTrigger("Run");
     }
-    
+    public void SelectPlayerBtnClick(int val)// left click =-1  right=1
+    {
+        selectedPlayer = selectedPlayer + val;  //-1 +1
+        selectedPlayer = Mathf.Clamp(selectedPlayer, 0, _playerCon.allCharactors.Length-1);
+        Debug.Log(selectedPlayer);
+        for (int i = 0; i < _playerCon.allCharactors.Length; i++)
+        {
+            if (i == selectedPlayer)
+            {
+                _playerCon.allCharactors[selectedPlayer].SetActive(true);
+                _playerCon.characterAnimator = _playerCon.allCharactors[selectedPlayer].GetComponent<Animator>();
+            }
+            else
+                _playerCon.allCharactors[i].SetActive(false);
+        }
+       
+    }
     
 }

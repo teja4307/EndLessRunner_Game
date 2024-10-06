@@ -11,6 +11,10 @@ public  class PlayerController : MonoBehaviour
     public float[] xPositions = { -1f, 0f, 1f};
     public GameObject character;
     public Animator characterAnimator;
+    
+
+    public GameObject[] allCharactors;
+    
     public bool isGameOver = false;
     public bool isFallDown = false;
     
@@ -34,6 +38,8 @@ public  class PlayerController : MonoBehaviour
     int[] temp_roll = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     private void Awake()
     {
+      //  SelectCharacter(0);
+
         targetX = xPositions[currentPosition];
         //charAnim = characterAnimator;
         //UpdateMovementSpeed();
@@ -44,6 +50,21 @@ public  class PlayerController : MonoBehaviour
     {
       // Transform Scale=character.transform.GetChild(0);
     }
+
+   /* void SelectCharacter(int index)
+    {
+        for (int i = 0; i < allCharactors.Length; i++)
+        {
+            if (i == index)
+            {
+                allCharactors[i].SetActive(true);
+                characterAnimator = allCharactors[i].GetComponent<Animator>();
+            }
+            else {
+                allCharactors[i].SetActive(false);
+            }
+        }
+    }*/
     public void Update()
     {
         HandleTouchInput();
@@ -155,6 +176,7 @@ public  class PlayerController : MonoBehaviour
 
         isJumping = true;
         characterAnimator.SetBool("Jump", true);
+        
         StartCoroutine(JumpRoutine());
     }
     private IEnumerator JumpRoutine()
@@ -185,8 +207,10 @@ public  class PlayerController : MonoBehaviour
         }
 
         isJumping = false;
-       if (!isGameOver)
+        if (!isGameOver)
+        {
             characterAnimator.SetBool("Jump", false);
+        }
     }
     private void RollDown()
     {
@@ -196,7 +220,7 @@ public  class PlayerController : MonoBehaviour
             int temp2 = UnityEngine.Random.Range(0, temp_roll.Length);
             string rollType = rollStyle[temp_roll[temp2]];
             characterAnimator.SetBool(rollType, true);
-           // playerTrigger.transform.localPosition = new Vector3(0, 0, 0);
+            // playerTrigger.transform.localPosition = new Vector3(0, 0, 0);
             StartCoroutine(ResetRoll(rollType));
             
         }

@@ -54,10 +54,12 @@ public class Player : MonoBehaviour
         if (GameManager._inst.PlayerSpeed == 0)
         {
             _playerController.characterAnimator.SetTrigger("Dead");
+            
         }
         else
         {
             _playerController.characterAnimator.SetTrigger("Dead");
+           
         }
     }
     

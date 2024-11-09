@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public  class PlayerController : MonoBehaviour
 {
@@ -11,10 +12,12 @@ public  class PlayerController : MonoBehaviour
     public float[] xPositions = { -1f, 0f, 1f};
     public GameObject character;
     public Animator characterAnimator;
-    
 
-    public GameObject[] allCharactors;
-    
+
+    //public GameObject[] allCharactors;
+    public List<GameObject> allCharactors = new List<GameObject>();
+
+
     public bool isGameOver = false;
     public bool isFallDown = false;
     
@@ -31,14 +34,14 @@ public  class PlayerController : MonoBehaviour
     private Vector3 firstTouchPos;
     private Vector3 lastTouchPos;
     private float dragDistance = 0.02f;
-    private string[] rollStyle = { "Roll", "SpringRoll" };
+   /*private string[] rollStyle = { "Roll", "SpringRoll" };
 
   
-    //int[] temp_roll = { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
-    int[] temp_roll = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int[] temp_roll = { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };*/
+    //int[] temp_roll = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     private void Awake()
     {
-      //  SelectCharacter(0);
+       //SelectCharacter(5);
 
         targetX = xPositions[currentPosition];
         //charAnim = characterAnimator;
@@ -48,6 +51,10 @@ public  class PlayerController : MonoBehaviour
     }
     private void Start()
     {
+        //allCharactors[0].SetActive(false);
+        //allCharactors[1].SetActive(true);
+       // allCharactors.RemoveAt(0);
+        
       // Transform Scale=character.transform.GetChild(0);
     }
 
@@ -60,7 +67,8 @@ public  class PlayerController : MonoBehaviour
                 allCharactors[i].SetActive(true);
                 characterAnimator = allCharactors[i].GetComponent<Animator>();
             }
-            else {
+            else
+            {
                 allCharactors[i].SetActive(false);
             }
         }
@@ -69,6 +77,11 @@ public  class PlayerController : MonoBehaviour
     {
         HandleTouchInput();
         PlayerMoment();
+    }
+    private void PlayerMoment()
+    {
+        Player.transform.position = new Vector3(Player.transform.position.x, Player.transform.position.y,
+                                                Player.transform.position.z + GameManager._inst.PlayerSpeed * Time.deltaTime);
     }
     private void HandleTouchInput()
     {
@@ -89,13 +102,13 @@ public  class PlayerController : MonoBehaviour
         {
             case TouchPhase.Began:
                 firstTouchPos = touch.position;
-                lastTouchPos = touch.position;
+                //lastTouchPos = touch.position;
                 break;
 
-            case TouchPhase.Moved:
+            /*case TouchPhase.Moved:
                 lastTouchPos = touch.position;
                 //EvaluateSwipe();
-                break;
+                break;*/
 
             case TouchPhase.Ended:
                 lastTouchPos = touch.position;
@@ -166,6 +179,29 @@ public  class PlayerController : MonoBehaviour
 
         StartMoveCoroutine();
     }
+    private void StartMoveCoroutine()
+    {
+        Vector3 targetPosition = new Vector3(targetX, character.transform.localPosition.y, character.transform.localPosition.z);
+
+        // If there is already a running coroutine, stop it before starting a new one
+        if (moveCoroutine != null)
+        {
+            StopCoroutine(moveCoroutine);
+        }
+
+        // Start the new coroutine and store its reference
+        moveCoroutine = StartCoroutine(MoveCharacterRoutine(targetPosition));
+    }
+    private IEnumerator MoveCharacterRoutine(Vector3 targetPosition)
+    {
+        // Keep moving the character until it reaches the target position
+        while (Vector3.Distance(character.transform.localPosition, targetPosition) > 0.01f)
+        {
+            character.transform.localPosition = Vector3.MoveTowards(character.transform.localPosition, targetPosition,
+                                                                    movementSpeed * Time.deltaTime);
+            yield return null; // Wait for the next frame
+        }
+    }
     private void Jump()
     {
         // Prevent jumping while rolling
@@ -217,15 +253,16 @@ public  class PlayerController : MonoBehaviour
         if (!isRolling)
         {
             isRolling = true;
-            int temp2 = UnityEngine.Random.Range(0, temp_roll.Length);
-            string rollType = rollStyle[temp_roll[temp2]];
-            characterAnimator.SetBool(rollType, true);
+            /*int temp2 = UnityEngine.Random.Range(0, temp_roll.Length);
+            string rollType = rollStyle[temp_roll[temp2]];*/
+           // characterAnimator.SetBool(rollType, true);
+            characterAnimator.SetBool("Roll", true);
             // playerTrigger.transform.localPosition = new Vector3(0, 0, 0);
-            StartCoroutine(ResetRoll(rollType));
+            StartCoroutine(ResetRoll());
             
         }
     }
-    private IEnumerator ResetRoll(string _roll)
+    private IEnumerator ResetRoll()//string _roll
     {
         BoxCollider Scale = character.transform.GetChild(0).GetComponent<BoxCollider>();
         float y_val = Scale.size.y;
@@ -259,32 +296,21 @@ public  class PlayerController : MonoBehaviour
         // playerTrigger.transform.localPosition = endPosition;
 
         // isRolling = false;
-        characterAnimator.SetBool(_roll, false);
+        //characterAnimator.SetBool(_roll, false);
+        characterAnimator.SetBool("Roll", false);
     }
-    private void StartMoveCoroutine()
+    public void CharAnim()
     {
-        Vector3 targetPosition = new Vector3(targetX, character.transform.localPosition.y, character.transform.localPosition.z);
-
-        // If there is already a running coroutine, stop it before starting a new one
-        if (moveCoroutine != null)
+        if (GameManager._inst.PlayerSpeed == 0)
         {
-            StopCoroutine(moveCoroutine);
+            characterAnimator.SetTrigger("Dead");
+
         }
-
-        // Start the new coroutine and store its reference
-        moveCoroutine = StartCoroutine(MoveCharacterRoutine(targetPosition));
-    }
-    private IEnumerator MoveCharacterRoutine(Vector3 targetPosition)
-    {
-        // Keep moving the character until it reaches the target position
-        while (Vector3.Distance(character.transform.localPosition, targetPosition) > 0.01f)
+        else
         {
-            character.transform.localPosition = Vector3.MoveTowards(character.transform.localPosition, targetPosition, movementSpeed * Time.deltaTime);
-            yield return null; // Wait for the next frame
+            characterAnimator.SetTrigger("Dead");
+
         }
     }
-    private void PlayerMoment()
-    {
-        Player.transform.position = new Vector3(Player.transform.position.x, Player.transform.position.y, Player.transform.position.z + GameManager._inst.PlayerSpeed * Time.deltaTime);
-    }
+
 }

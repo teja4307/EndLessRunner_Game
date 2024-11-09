@@ -16,14 +16,19 @@ public class GameManager : MonoBehaviour
     public GameObject GameOver_Panel;
     public GameObject Menu_Panel;
     public GameObject playerSelct_panel;
+    public GameObject Lock_panel;
     [HideInInspector]
     public int PlayerSpeed = 0;
     public bool isGameStart = false;
+    //public Image Btn_GameStart;
+    public Button startButton;
+
+
 
     private int selectedPlayer = 0;
     private void Awake()
     {
-      // PlayerPrefs.DeleteAll();
+     // PlayerPrefs.DeleteAll();
     }
     private void Start()
     {
@@ -46,7 +51,7 @@ public class GameManager : MonoBehaviour
         _text.text = "HighScore: " + highScore;
 
     }
-    public void GameOver(int score)
+    public void GameOver()
     {
         GameOver_Panel.SetActive(true);
         isGameStart = false ;
@@ -67,8 +72,6 @@ public class GameManager : MonoBehaviour
     {
         Menu_Panel.SetActive(false);
         playerSelct_panel.SetActive(true);
-     
-       
     }
     public void GameStart()
     {
@@ -79,10 +82,12 @@ public class GameManager : MonoBehaviour
     }
     public void SelectPlayerBtnClick(int val)// left click =-1  right=1
     {
+        startButton.interactable = false;
+        Lock_panel.SetActive(true);
         selectedPlayer = selectedPlayer + val;  //-1 +1
-        selectedPlayer = Mathf.Clamp(selectedPlayer, 0, _playerCon.allCharactors.Length-1);
-        Debug.Log(selectedPlayer);
-        for (int i = 0; i < _playerCon.allCharactors.Length; i++)
+        selectedPlayer = Mathf.Clamp(selectedPlayer, 0, _playerCon.allCharactors.Count - 1);
+        //Debug.Log(selectedPlayer);
+        for (int i = 0; i < _playerCon.allCharactors.Count; i++)
         {
             if (i == selectedPlayer)
             {
@@ -92,7 +97,35 @@ public class GameManager : MonoBehaviour
             else
                 _playerCon.allCharactors[i].SetActive(false);
         }
-       
+        if(_playerCon.allCharactors[selectedPlayer] == _playerCon.allCharactors[0])
+        {
+            startButton.interactable = true;
+            Lock_panel.SetActive(false);
+        }
+        UnlockChar();
     }
-    
+    public void UnlockChar()
+    {
+        for (int i = 1; i <= _playerCon.allCharactors.Count-1; i++)
+        {
+            if (highScore >= i * 100 && _playerCon.allCharactors[selectedPlayer] == _playerCon.allCharactors[i])
+            {
+                startButton.interactable = true;
+                Lock_panel.SetActive(false);
+               // break;
+            }
+        }
+        /*  if (selectedPlayer < value)
+          {
+              startButton.interactable = true;
+              Lock_panel.SetActive(false);
+          }
+          else
+          {
+              startButton.interactable = false;
+              Lock_panel.SetActive(true);
+          }*/
+
+    }
+
 }

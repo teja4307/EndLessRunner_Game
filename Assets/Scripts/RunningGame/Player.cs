@@ -31,17 +31,18 @@ public class Player : MonoBehaviour
         }
        if (other.gameObject.CompareTag("Enemy"))
         {
-            GameManager._inst.GameOver(GameManager._inst.score);
+            GameManager._inst.GameOver();
             GameManager._inst.PlayerSpeed = 0;
-            CharAnim();
-            GameManager._inst.HigestScoreGetter(GameManager._inst.H_text);
+            _playerController.CharAnim();
+            //GameManager._inst.HigestScoreGetter(GameManager._inst.H_text);
         }
         if (other.gameObject.CompareTag("Coin"))
         {
             other.gameObject.SetActive(false);
             GameManager._inst.score++;
            GameManager._inst.UpdateScore(GameManager._inst.score,GameManager._inst._text);
-            if (GameManager._inst.score > PlayerPrefs.GetInt("HighScore")){
+            if (GameManager._inst.score > PlayerPrefs.GetInt("HighScore"))
+            {
                 PlayerPrefs.SetInt("HighScore", GameManager._inst.score);
             }
             GameManager._inst.HigestScoreGetter(GameManager._inst.H_text);
@@ -49,18 +50,6 @@ public class Player : MonoBehaviour
         
     }
    
-    private void CharAnim()
-    {
-        if (GameManager._inst.PlayerSpeed == 0)
-        {
-            _playerController.characterAnimator.SetTrigger("Dead");
-            
-        }
-        else
-        {
-            _playerController.characterAnimator.SetTrigger("Dead");
-           
-        }
-    }
+   
     
 }

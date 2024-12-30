@@ -6,9 +6,9 @@ TagManager:
   tags:
   - Ground
   - Trigger1
-  - Trigger2
   - Enemy
   - Coin
+  - ExitTrigger
   layers:
   - Default
   - TransparentFX

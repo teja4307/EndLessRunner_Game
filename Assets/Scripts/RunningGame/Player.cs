@@ -9,26 +9,32 @@ public class Player : MonoBehaviour
     
     public CoinCollection _CoinColl;
     //public Road _road;
-    public GameObject[] road;
     public PlayerController _playerController;
-   // public GameObject GameOver_Panel;
-   
-  
+    public RoadControler _roadCntrl;
+    // public GameObject GameOver_Panel;
+
+
     private void OnTriggerEnter(Collider other)
     {
-       // print("triggerd");
-        if (other.gameObject.CompareTag("Trigger1"))
+        // print("triggerd");
+        if (other.gameObject.CompareTag("ExitTrigger"))
+        {
+         /*   exitObject=other.gameObject.transform.parent.gameObject;
+            print(exitObject.name);*/
+            _roadCntrl.DestroyexitObject(_roadCntrl.exitObject);
+        }
+        /*if (other.gameObject.CompareTag("Trigger1"))
         {
 
             road[1].transform.position = road[0].transform.position + new Vector3(0, 0, 107.8f);
             _CoinColl.SetActiveCoins1();
-        }
-        if (other.gameObject.CompareTag("Trigger2"))
+        }*/
+        /*if (other.gameObject.CompareTag("Trigger2"))
         {
 
             road[0].transform.position = road[1].transform.position + new Vector3(0, 0, 108);
             _CoinColl.SetActiveCoins2();
-        }
+        }*/
        if (other.gameObject.CompareTag("Enemy"))
         {
             GameManager._inst.GameOver();
